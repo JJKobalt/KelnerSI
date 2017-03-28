@@ -13,15 +13,26 @@ import waiter.map.MapRenderer;
 
 import java.io.File;
 
-public class WaiterApp extends Application
+public class WaiterView extends Application
 {
+
+    private WaiterPresenter presenter;
+
+    private Map map;
+
+    public Map getMap()
+    {
+        return map;
+    }
 
     @Override
     public void start(Stage primaryStage) throws Exception
     {
         try
         {
-            Map map = loadMap();
+            presenter = new WaiterPresenter(this);
+
+            map = loadMap();
 
             Canvas canvas = new Canvas(800, 640);
 
