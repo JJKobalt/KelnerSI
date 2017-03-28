@@ -46,8 +46,7 @@ public class FXOrthogonalMapRenderer implements MapRenderer
         for(int x = 0; x <= mapWidth; ++x) {
             for(int y = 0; y <= mapHeight; ++y) {
                 Tile tile = layer.getTileAt(x , y);
-
-                if(tile != null) {
+                if(tile != null && !"true".equalsIgnoreCase(tile.getProperties().getProperty("invisible"))){
                     Image image = getTileImage(tile);
                     context.drawImage(image, x*tileWidth, y * tileHeight);
                 }
