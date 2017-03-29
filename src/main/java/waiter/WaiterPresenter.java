@@ -4,18 +4,15 @@ import tiled.core.MapLayer;
 import tiled.core.Tile;
 import tiled.core.TileLayer;
 
-public class WaiterPresenter
-{
+public class WaiterPresenter {
 
-    private final WaiterView view;
+    private WaiterView view;
 
-    public WaiterPresenter(WaiterView view)
-    {
+    WaiterPresenter(WaiterView view) {
         this.view = view;
     }
 
     boolean isCollidable(int x, int y){
-
         for(MapLayer layer : view.getMap()){
             Tile tile = ((TileLayer) layer).getTileAt(x, y);
             if(tile != null && "true".equalsIgnoreCase(tile.getProperties().getProperty("collidable"))){
@@ -24,5 +21,21 @@ public class WaiterPresenter
         }
 
         return false;
+    }
+
+    void moveWaiterLeft() {
+        view.moveWaiterLeft();
+    }
+
+    void moveWaiterUp() {
+        view.moveWaiterUp();
+    }
+
+    void moveWaiterDown() {
+        view.moveWaiterDown();
+    }
+
+    void moveWaiterRight() {
+        view.moveWaiterRight();
     }
 }

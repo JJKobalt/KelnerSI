@@ -3,6 +3,8 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/KelnerSI.iml" filepath="$PROJECT_DIR$/.idea/modules/KelnerSI.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/KelnerSI_main.iml" filepath="$PROJECT_DIR$/.idea/modules/KelnerSI_main.iml" group="KelnerSI" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/KelnerSI_test.iml" filepath="$PROJECT_DIR$/.idea/modules/KelnerSI_test.iml" group="KelnerSI" />
     </modules>
   </component>
 </project>
