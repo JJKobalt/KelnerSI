@@ -33,11 +33,9 @@ public class Waiter {
     public void tryGoTo(int tileX, int tileY) {
 
         if (!presenter.isCollidable(tileX, tileY)) {
-            try {
-                MockWalking(tileX, tileY);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+
+                presenter.moveWaiter(tileX, tileY);
+
 
         }
     }

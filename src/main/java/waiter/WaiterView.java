@@ -1,6 +1,8 @@
 package waiter;
 
+import javafx.animation.TranslateTransition;
 import javafx.application.Application;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
@@ -12,8 +14,10 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.ImagePattern;
+import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import tiled.core.Map;
 import tiled.io.TMXMapReader;
 import waiter.map.FXOrthogonalMapRenderer;
@@ -29,6 +33,11 @@ public class WaiterView extends Application {
 
     private WaiterPresenter presenter;
     private Map map;
+     TranslateTransition transition;
+
+    private static final int      KEYBOARD_MOVEMENT_DELTA = 5;
+    private static final Duration TRANSLATE_DURATION      = Duration.seconds(0.25);
+
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -36,6 +45,7 @@ public class WaiterView extends Application {
         try {
 
             Pane waiterPane = createWaiterPane();
+            transition = createTranslateTransition(waiter);
             presenter = new WaiterPresenter(this);
 
             Pane root = new StackPane();
@@ -62,6 +72,22 @@ public class WaiterView extends Application {
 
 
     }
+
+    private TranslateTransition createTranslateTransition(final Rectangle rectangle) {
+        final TranslateTransition transition = new TranslateTransition(TRANSLATE_DURATION, rectangle);
+        transition.setOnFinished(new EventHandler<ActionEvent>() {
+            @Override public void handle(ActionEvent t) {
+                rectangle.setX(rectangle.getTranslateX() + rectangle.getX());
+                rectangle.setY(rectangle.getTranslateY() + rectangle.getY());
+                rectangle.setTranslateX(0);
+                rectangle.setTranslateY(0);
+            }
+        });
+        return transition;
+    }
+
+
+
 
     private void initializeMouseClickEventHandler(Scene scene) {
 
@@ -130,7 +156,7 @@ public class WaiterView extends Application {
         waiter.setY(64);
 
 
-        Image image = new Image(WaiterView.class.getClassLoader().getResource("waiter.jpg").toString());
+        Image image = new Image(WaiterView.class.getClassLoader().getResource("waiter.png").toString());
         waiter.setFill(new ImagePattern(image));
 
         waiterPane.getChildren().add(waiter);
@@ -177,8 +203,10 @@ public class WaiterView extends Application {
 
     public void setWaiterPosition(int tileX, int tileY) {
 
-        waiter.setX(tileIndexToCoordinate(tileX));
-        waiter.setY(tileIndexToCoordinate(tileY));
+
+        transition.setToX(tileIndexToCoordinate(tileX) - waiter.getX());
+        transition.setToY(tileIndexToCoordinate(tileY) - waiter.getY());
+        transition.playFromStart();
 
     }
 
