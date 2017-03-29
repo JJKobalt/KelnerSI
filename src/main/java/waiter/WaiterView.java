@@ -1,11 +1,14 @@
 package waiter;
 
 import javafx.application.Application;
+import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.ImagePattern;
@@ -31,30 +34,50 @@ public class WaiterView extends Application {
     public void start(Stage primaryStage) throws Exception {
 
         try {
+
+            Pane waiterPane = createWaiterPane();
             presenter = new WaiterPresenter(this);
 
             Pane root = new StackPane();
             Scene scene = new Scene(root, 800, 640);
 
             initializeKeyboardEventHandler(scene);
-
+            initializeMouseClickEventHandler(scene);
 
             Canvas restaurantCanvas = createRestaurantCanvas();
             root.getChildren().add(restaurantCanvas);
 
 
-            root.getChildren().add(createWaiterPane());
+            root.getChildren().add(waiterPane);
 
 
             primaryStage.setTitle("Inteligentny kelner | SI 2017SL");
             primaryStage.setScene(scene);
             primaryStage.show();
 
+
         } catch (Exception e) {
             e.printStackTrace();
         }
 
 
+    }
+
+    private void initializeMouseClickEventHandler(Scene scene) {
+
+        scene.addEventFilter(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                int tileX = doubleToTileId(mouseEvent.getX());
+                int tileY = doubleToTileId(mouseEvent.getY());
+                presenter.orderWaiterToGoTo(tileX, tileY);
+            }
+        });
+    }
+
+    private int doubleToTileId(double x) {
+
+        return (int) x / 32;
     }
 
     private void initializeKeyboardEventHandler(Scene scene) {
@@ -143,10 +166,26 @@ public class WaiterView extends Application {
     }
 
     void moveWaiterRight() {
+
         waiter.setX(waiter.getX()+32);
     }
 
     Map getMap() {
         return map;
     }
+
+
+    public void setWaiterPosition(int tileX, int tileY) {
+
+        waiter.setX(tileIndexToCoordinate(tileX));
+        waiter.setY(tileIndexToCoordinate(tileY));
+
+    }
+
+    public int tileIndexToCoordinate(int tileId) {
+        return tileId * 32;
+    }
+
+
+
 }

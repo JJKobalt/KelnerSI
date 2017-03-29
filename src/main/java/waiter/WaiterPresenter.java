@@ -7,9 +7,15 @@ import tiled.core.TileLayer;
 public class WaiterPresenter {
 
     private WaiterView view;
+    Waiter waiter;
+
+
 
     WaiterPresenter(WaiterView view) {
         this.view = view;
+        waiter = new Waiter(3, 3, this);
+
+
     }
 
     boolean isCollidable(int x, int y){
@@ -36,6 +42,19 @@ public class WaiterPresenter {
     }
 
     void moveWaiterRight() {
+
         view.moveWaiterRight();
+    }
+
+    public void moveWaiter(int tileX, int tileY) {
+
+        view.setWaiterPosition(tileX, tileY);
+
+    }
+
+    public void orderWaiterToGoTo(int tileX, int tileY) {
+
+        waiter.tryGoTo(tileX, tileY);
+
     }
 }
