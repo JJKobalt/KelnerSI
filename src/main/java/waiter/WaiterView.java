@@ -19,14 +19,13 @@ import waiter.map.MapRenderer;
 import java.io.File;
 import java.io.IOException;
 
-/**
- * Created by JanJa on 28.03.2017.
- */
+
 public class WaiterView extends Application {
 
-    Rectangle waiter;
+    private Rectangle waiter;
 
-    WaiterPresenter presenter;
+    private WaiterPresenter presenter;
+    private Map map;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -37,12 +36,11 @@ public class WaiterView extends Application {
             Pane root = new StackPane();
             Scene scene = new Scene(root, 800, 640);
 
-            initializeKeybordEventHandler(scene);
+            initializeKeyboardEventHandler(scene);
 
 
-            Canvas restaurantCanvas = getRestaurantCanvas();
+            Canvas restaurantCanvas = createRestaurantCanvas();
             root.getChildren().add(restaurantCanvas);
-
 
 
             root.getChildren().add(createWaiterPane());
@@ -59,7 +57,7 @@ public class WaiterView extends Application {
 
     }
 
-    private void initializeKeybordEventHandler(Scene scene) {
+    private void initializeKeyboardEventHandler(Scene scene) {
         scene.addEventFilter(KeyEvent.KEY_PRESSED, keyEvent -> {
 
             if(keyEvent.getCode().equals(KeyCode.UP)){
@@ -77,9 +75,9 @@ public class WaiterView extends Application {
         });
     }
 
-    private Canvas getRestaurantCanvas() throws Exception {
+    private Canvas createRestaurantCanvas() throws Exception {
 
-        Map map = loadMap();
+        map = loadMap();
         Canvas canvas = new Canvas(800, 640);
         MapRenderer renderer = createRenderer(map);
         renderer.paint(canvas.getGraphicsContext2D(), map);
@@ -98,7 +96,7 @@ public class WaiterView extends Application {
     }
 
 
-    public Pane createWaiterPane() throws IOException {
+    private Pane createWaiterPane() throws IOException {
         Pane waiterPane = new Pane();
 
 
@@ -132,20 +130,24 @@ public class WaiterView extends Application {
     }
 
 
-    public void moveWaiterLeft() {
+    void moveWaiterLeft() {
     waiter.setX(waiter.getX()-32);
     }
 
-    public void moveWaiterUp() {
+    void moveWaiterUp() {
         waiter.setY(waiter.getY()-32);
     }
 
-    public void moveWaiterDown() {
+    void moveWaiterDown() {
         waiter.setY(waiter.getY()+32);
     }
 
-    public void moveWaiterRight() {
+    void moveWaiterRight() {
         waiter.setX(waiter.getX()+32);
+    }
+
+    public Map getMap() {
+        return map;
     }
 }
 

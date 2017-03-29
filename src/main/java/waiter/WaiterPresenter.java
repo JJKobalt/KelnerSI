@@ -1,32 +1,41 @@
 package waiter;
 
-/**
- * Created by JanJa on 28.03.2017.
- */
+import tiled.core.MapLayer;
+import tiled.core.Tile;
+import tiled.core.TileLayer;
+
 public class WaiterPresenter {
 
-    WaiterView view;
+    private WaiterView view;
 
-    public WaiterPresenter(WaiterView view) {
+    WaiterPresenter(WaiterView view) {
         this.view = view;
     }
 
+    boolean isCollidable(int x, int y){
+        for(MapLayer layer : view.getMap()){
+            Tile tile = ((TileLayer) layer).getTileAt(x, y);
+            if(tile != null && "true".equalsIgnoreCase(tile.getProperties().getProperty("collidable"))){
+                return true;
+            }
+        }
 
-    public void moveWaiterLeft() {
-        view.moveWaiterLeft();
-
+        return false;
     }
 
+    void moveWaiterLeft() {
+        view.moveWaiterLeft();
+    }
 
-    public void moveWaiterUp() {
+    void moveWaiterUp() {
         view.moveWaiterUp();
     }
 
-    public void moveWaiterDown() {
+    void moveWaiterDown() {
         view.moveWaiterDown();
     }
 
-    public void moveWaiterRight() {
+    void moveWaiterRight() {
         view.moveWaiterRight();
     }
 }

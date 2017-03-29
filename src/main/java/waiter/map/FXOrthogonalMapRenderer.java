@@ -4,13 +4,11 @@ import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.image.WritableImage;
-
 import tiled.core.Map;
 import tiled.core.MapLayer;
 import tiled.core.Tile;
 import tiled.core.TileLayer;
 
-import java.awt.geom.Area;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
 
@@ -26,24 +24,12 @@ public class FXOrthogonalMapRenderer implements MapRenderer
     {
         this.context = context;
         this.map = map;
-
-       map.addLayer(map.getLayer(1));
-
-        MapLayer l = map.getLayer(1);
-
         renderAllLayers();
-
-
-
     }
 
     private void renderAllLayers(){
-
-
-
         for (MapLayer layer : map) {
             if (layer instanceof TileLayer) {
-
                 renderLayer((TileLayer) layer);
             }
         }
@@ -60,8 +46,7 @@ public class FXOrthogonalMapRenderer implements MapRenderer
         for(int x = 0; x <= mapWidth; ++x) {
             for(int y = 0; y <= mapHeight; ++y) {
                 Tile tile = layer.getTileAt(x , y);
-
-                if(tile != null) {
+                if(tile != null && !"true".equalsIgnoreCase(tile.getProperties().getProperty("invisible"))){
                     Image image = getTileImage(tile);
                     context.drawImage(image, x*tileWidth, y * tileHeight);
                 }
