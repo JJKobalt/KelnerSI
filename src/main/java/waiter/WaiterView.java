@@ -3,6 +3,7 @@ package waiter;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -17,6 +18,7 @@ import waiter.waiter.WAITER_ANGLE;
 import waiter.waiter.Waiter;
 
 import java.io.File;
+import java.util.HashMap;
 
 
 public class WaiterView extends Application {
@@ -27,11 +29,14 @@ public class WaiterView extends Application {
     private Canvas canvas;
 
     private WaiterPresenter presenter;
+    private java.util.Map<WAITER_ANGLE, Image> waiterImages;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
 
         try {
+
+            waiterImages = generateWaiterImages();
 
             Pane root = new StackPane();
             Scene scene = new Scene(root, 800, 640);
@@ -79,6 +84,9 @@ public class WaiterView extends Application {
             if(keyEvent.getCode().equals(KeyCode.LEFT)){
                 presenter.rotateWaiterLeft();
             }
+            if(keyEvent.getCode().equals(KeyCode.SPACE)){
+                presenter.moveWaiter(presenter.generateMoveCommands());
+            }
         });
     }
 
@@ -91,23 +99,6 @@ public class WaiterView extends Application {
 
         return reader.readMap(file.getAbsolutePath());
     }
-
-
-    /*private Pane createWaiterPane() throws IOException {
-        Pane waiterPane = new Pane();
-
-        waiter = new Rectangle();
-        waiter.setHeight(32);
-        waiter.setWidth(32);
-        waiter.setX(64);
-        waiter.setY(64);
-
-        Image image = new Image(WaiterView.class.getClassLoader().getResource("waiter.png").toString());
-        waiter.setFill(new ImagePattern(image));
-
-        waiterPane.getChildren().add(waiter);
-        return waiterPane;
-    }*/
 
     private static MapRenderer createRenderer(Map map) {
         switch (map.getOrientation()) {
@@ -122,31 +113,28 @@ public class WaiterView extends Application {
         }
     }
 
+    java.util.Map<WAITER_ANGLE, Image> generateWaiterImages(){
+        java.util.Map<WAITER_ANGLE, Image> images = new HashMap<>();
+
+        images.put(WAITER_ANGLE.NORTH, new Image(WaiterView.class.getClassLoader().getResource("waiter-north.png").toString()));
+        images.put(WAITER_ANGLE.EAST, new Image(WaiterView.class.getClassLoader().getResource("waiter-east.png").toString()));
+        images.put(WAITER_ANGLE.SOUTH, new Image(WaiterView.class.getClassLoader().getResource("waiter-south.png").toString()));
+        images.put(WAITER_ANGLE.WEST, new Image(WaiterView.class.getClassLoader().getResource("waiter-west.png").toString()));
+
+        return images;
+    }
+
     void redraw(){
         renderMap();
         renderWaiter();
     }
 
-    private void renderWaiter()
+    void renderWaiter()
     {
-        Image image;
-
         Waiter waiter = presenter.getWaiter();
+        GraphicsContext gc = canvas.getGraphicsContext2D();
 
-        if(waiter.getAngle() == WAITER_ANGLE.NORTH){
-            image = new Image(WaiterView.class.getClassLoader().getResource("waiter-north.png").toString());
-        }
-        else if(waiter.getAngle() == WAITER_ANGLE.EAST){
-            image = new Image(WaiterView.class.getClassLoader().getResource("waiter-east.png").toString());
-        }
-        else if(waiter.getAngle() == WAITER_ANGLE.SOUTH){
-            image = new Image(WaiterView.class.getClassLoader().getResource("waiter-south.png").toString());
-        }
-        else{
-            image = new Image(WaiterView.class.getClassLoader().getResource("waiter-west.png").toString());
-        }
-
-        canvas.getGraphicsContext2D().drawImage(image,
+        gc.drawImage(waiterImages.get(waiter.getAngle()),
                 tileIdToDouble(waiter.getTileX()),
                 tileIdToDouble(waiter.getTileY()),
                 TILE_SIZE, TILE_SIZE);

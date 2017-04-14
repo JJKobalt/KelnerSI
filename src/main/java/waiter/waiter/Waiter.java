@@ -2,7 +2,11 @@ package waiter.waiter;
 
 import waiter.WaiterPresenter;
 
-public class Waiter {
+import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
+
+public class Waiter
+{
 
     private final WaiterPresenter presenter;
 
@@ -10,7 +14,11 @@ public class Waiter {
     private int tileY;
     private WAITER_ANGLE angle = WAITER_ANGLE.EAST;
 
-    public Waiter(int tileX, int tileY, WaiterPresenter presenter) {
+    private final int speed = 100;
+    private LocalTime lastMoveTime = LocalTime.now();
+
+    public Waiter(int tileX, int tileY, WaiterPresenter presenter)
+    {
         this.tileX = tileX;
         this.tileY = tileY;
         this.presenter = presenter;
@@ -31,27 +39,64 @@ public class Waiter {
         return tileY;
     }
 
-    public void rotateLeft(){
+    public boolean rotateLeft()
+    {
+        LocalTime currentTime = LocalTime.now();
+
+        if(ChronoUnit.MILLIS.between(lastMoveTime, currentTime) < speed)
+        {
+            return false;
+        }
+
         angle = angle.rotateLeft();
+        lastMoveTime = currentTime;
+
+        return true;
     }
 
-    public void rotateRight(){
+    public boolean rotateRight()
+    {
+        LocalTime currentTime = LocalTime.now();
+
+        if(ChronoUnit.MILLIS.between(lastMoveTime, currentTime) < speed)
+        {
+            return false;
+        }
+
         angle = angle.rotateRight();
+        lastMoveTime = currentTime;
+
+        return true;
     }
 
-    public void moveForward(){
-        if(angle == WAITER_ANGLE.NORTH && presenter.isWalkable(tileX, tileY - 1)){
+    public boolean moveForward()
+    {
+        LocalTime currentTime = LocalTime.now();
+
+        if(ChronoUnit.MILLIS.between(lastMoveTime, currentTime) < speed)
+        {
+            return false;
+        }
+
+        if(angle == WAITER_ANGLE.NORTH && presenter.isWalkable(tileX, tileY - 1))
+        {
             --tileY;
         }
-        else if(angle == WAITER_ANGLE.SOUTH && presenter.isWalkable(tileX, tileY + 1)){
+        else if(angle == WAITER_ANGLE.SOUTH && presenter.isWalkable(tileX, tileY + 1))
+        {
             ++tileY;
         }
-        else if(angle == WAITER_ANGLE.EAST && presenter.isWalkable(tileX+1, tileY)){
+        else if(angle == WAITER_ANGLE.EAST && presenter.isWalkable(tileX + 1, tileY))
+        {
             ++tileX;
         }
-        else if(angle == WAITER_ANGLE.WEST && presenter.isWalkable(tileX-1, tileY)){
+        else if(angle == WAITER_ANGLE.WEST && presenter.isWalkable(tileX - 1, tileY))
+        {
             --tileX;
         }
+
+        lastMoveTime = currentTime;
+        return true;
     }
 
 }

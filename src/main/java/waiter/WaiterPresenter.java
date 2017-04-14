@@ -4,7 +4,13 @@ import tiled.core.Map;
 import tiled.core.MapLayer;
 import tiled.core.Tile;
 import tiled.core.TileLayer;
-import waiter.waiter.Waiter;
+import waiter.waiter.*;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class WaiterPresenter {
 
@@ -41,6 +47,46 @@ public class WaiterPresenter {
         }
 
         return false;
+    }
+
+
+    List<MoveCommand> generateMoveCommands(){
+        List<MoveCommand> commands = new ArrayList<>();
+        commands.add(new RotateLeftMoveCommand(getWaiter()));
+        commands.add(new ForwardMoveCommand(getWaiter()));
+        commands.add(new ForwardMoveCommand(getWaiter()));
+        commands.add(new RotateRightMoveCommand(getWaiter()));
+        commands.add(new ForwardMoveCommand(getWaiter()));
+        commands.add(new ForwardMoveCommand(getWaiter()));
+        commands.add(new ForwardMoveCommand(getWaiter()));
+        return commands;
+    }
+
+    void moveWaiter(List<MoveCommand> commands){
+
+        ConcurrentLinkedQueue<MoveCommand> queue = new ConcurrentLinkedQueue<>(commands);
+
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+
+        Runnable task = () ->
+        {
+            view.redraw();
+
+            while(!queue.isEmpty()){
+
+                MoveCommand command = queue.peek();
+                boolean moved = command.go();
+
+                if(moved){
+                    queue.poll();
+                    view.renderWaiter();
+                }
+            }
+        };
+
+        executorService.submit(task);
+
+        executorService.shutdown();
     }
 
     void rotateWaiterLeft(){
