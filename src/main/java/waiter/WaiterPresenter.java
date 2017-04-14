@@ -23,7 +23,16 @@ public class WaiterPresenter {
         return waiter;
     }
 
-    public boolean isCollidable(int x, int y){
+    public boolean isWalkable(int x, int y){
+        return isInMapBounds(x, y) && !isCollidable(x, y);
+    }
+
+    private boolean isInMapBounds(int x, int y)
+    {
+        return x >= 0 && y >= 0 && x < map.getWidth() && y < map.getHeight();
+    }
+
+    private boolean isCollidable(int x, int y){
         for(MapLayer layer : this.map){
             Tile tile = ((TileLayer) layer).getTileAt(x, y);
             if(tile != null && "true".equalsIgnoreCase(tile.getProperties().getProperty("collidable"))){
@@ -32,10 +41,6 @@ public class WaiterPresenter {
         }
 
         return false;
-    }
-
-    public boolean isWalkable(int x, int y){
-        return !isCollidable(x, y);
     }
 
     void rotateWaiterLeft(){
