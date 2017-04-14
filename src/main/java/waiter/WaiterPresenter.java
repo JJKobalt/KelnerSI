@@ -1,25 +1,30 @@
 package waiter;
 
+import tiled.core.Map;
 import tiled.core.MapLayer;
 import tiled.core.Tile;
 import tiled.core.TileLayer;
+import waiter.waiter.Waiter;
 
 public class WaiterPresenter {
 
     private WaiterView view;
-    Waiter waiter;
+    private Waiter waiter;
+    private final Map map;
 
-
-
-    WaiterPresenter(WaiterView view) {
+    WaiterPresenter(WaiterView view, Map map) {
         this.view = view;
+        this.map = map;
         waiter = new Waiter(3, 3, this);
-
-
     }
 
-    boolean isCollidable(int x, int y){
-        for(MapLayer layer : view.getMap()){
+    Waiter getWaiter()
+    {
+        return waiter;
+    }
+
+    public boolean isCollidable(int x, int y){
+        for(MapLayer layer : this.map){
             Tile tile = ((TileLayer) layer).getTileAt(x, y);
             if(tile != null && "true".equalsIgnoreCase(tile.getProperties().getProperty("collidable"))){
                 return true;
@@ -29,32 +34,22 @@ public class WaiterPresenter {
         return false;
     }
 
-    void moveWaiterLeft() {
-        view.moveWaiterLeft();
+    public boolean isWalkable(int x, int y){
+        return !isCollidable(x, y);
     }
 
-    void moveWaiterUp() {
-        view.moveWaiterUp();
+    void rotateWaiterLeft(){
+        waiter.rotateLeft();
+        view.redraw();
     }
 
-    void moveWaiterDown() {
-        view.moveWaiterDown();
+    void rotateWaiterRight(){
+        waiter.rotateRight();
+        view.redraw();
     }
 
-    void moveWaiterRight() {
-
-        view.moveWaiterRight();
-    }
-
-    public void moveWaiter(int tileX, int tileY) {
-
-        view.setWaiterPosition(tileX, tileY);
-
-    }
-
-    public void orderWaiterToGoTo(int tileX, int tileY) {
-
-        waiter.tryGoTo(tileX, tileY);
-
+    void moveWaiterForward(){
+        waiter.moveForward();
+        view.redraw();
     }
 }

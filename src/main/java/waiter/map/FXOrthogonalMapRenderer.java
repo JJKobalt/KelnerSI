@@ -19,11 +19,15 @@ public class FXOrthogonalMapRenderer implements MapRenderer
 
     private java.util.Map<Integer, Image> tilesCache = new HashMap<>();
 
+    public FXOrthogonalMapRenderer(Map map)
+    {
+        this.map = map;
+    }
+
     @Override
-    public void paint(GraphicsContext context, Map map)
+    public void paint(GraphicsContext context)
     {
         this.context = context;
-        this.map = map;
         renderAllLayers();
     }
 
