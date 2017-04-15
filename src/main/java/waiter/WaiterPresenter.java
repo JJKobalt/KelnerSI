@@ -4,6 +4,8 @@ import tiled.core.Map;
 import tiled.core.MapLayer;
 import tiled.core.Tile;
 import tiled.core.TileLayer;
+import waiter.map.FindPathStrategy;
+import waiter.map.NaiveFindPathStrategy;
 import waiter.waiter.*;
 
 import java.util.ArrayList;
@@ -12,24 +14,34 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class WaiterPresenter {
+public class WaiterPresenter
+{
 
+    private final Map map;
     private WaiterView view;
     private Waiter waiter;
-    private final Map map;
 
-    WaiterPresenter(WaiterView view, Map map) {
+    private FindPathStrategy findPathStrategy;
+
+    WaiterPresenter(WaiterView view, Map map)
+    {
         this.view = view;
         this.map = map;
         waiter = new Waiter(3, 3, this);
+        findPathStrategy = new NaiveFindPathStrategy(this);
     }
 
-    Waiter getWaiter()
+    public Waiter getWaiter()
     {
         return waiter;
     }
 
-    public boolean isWalkable(int x, int y){
+    public Map getMap(){
+        return map;
+    }
+
+    public boolean isWalkable(int x, int y)
+    {
         return isInMapBounds(x, y) && !isCollidable(x, y);
     }
 
@@ -38,10 +50,13 @@ public class WaiterPresenter {
         return x >= 0 && y >= 0 && x < map.getWidth() && y < map.getHeight();
     }
 
-    private boolean isCollidable(int x, int y){
-        for(MapLayer layer : this.map){
+    private boolean isCollidable(int x, int y)
+    {
+        for(MapLayer layer : this.map)
+        {
             Tile tile = ((TileLayer) layer).getTileAt(x, y);
-            if(tile != null && "true".equalsIgnoreCase(tile.getProperties().getProperty("collidable"))){
+            if(tile != null && "true".equalsIgnoreCase(tile.getProperties().getProperty("collidable")))
+            {
                 return true;
             }
         }
@@ -50,19 +65,20 @@ public class WaiterPresenter {
     }
 
 
-    List<MoveCommand> generateMoveCommands(){
+    List<MoveCommand> generateMoveCommands()
+    {
         List<MoveCommand> commands = new ArrayList<>();
-        commands.add(new RotateLeftMoveCommand(getWaiter()));
+        commands.add(new LeftMoveCommand(getWaiter()));
+        commands.add(new ForwardMoveCommand(getWaiter()));
+        commands.add(new RightMoveCommand(getWaiter()));
         commands.add(new ForwardMoveCommand(getWaiter()));
         commands.add(new ForwardMoveCommand(getWaiter()));
-        commands.add(new RotateRightMoveCommand(getWaiter()));
-        commands.add(new ForwardMoveCommand(getWaiter()));
-        commands.add(new ForwardMoveCommand(getWaiter()));
-        commands.add(new ForwardMoveCommand(getWaiter()));
+
         return commands;
     }
 
-    void moveWaiter(List<MoveCommand> commands){
+    void moveWaiter(List<MoveCommand> commands)
+    {
 
         ConcurrentLinkedQueue<MoveCommand> queue = new ConcurrentLinkedQueue<>(commands);
 
@@ -70,18 +86,20 @@ public class WaiterPresenter {
 
         Runnable task = () ->
         {
-            view.redraw();
-
-            while(!queue.isEmpty()){
+            while(!queue.isEmpty())
+            {
 
                 MoveCommand command = queue.peek();
                 boolean moved = command.go();
 
-                if(moved){
+                if(moved)
+                {
                     queue.poll();
                     view.renderWaiter();
                 }
             }
+
+            view.redraw();
         };
 
         executorService.submit(task);
@@ -89,18 +107,35 @@ public class WaiterPresenter {
         executorService.shutdown();
     }
 
-    void rotateWaiterLeft(){
+    void rotateWaiterLeft()
+    {
         waiter.rotateLeft();
         view.redraw();
     }
 
-    void rotateWaiterRight(){
+    void rotateWaiterRight()
+    {
         waiter.rotateRight();
         view.redraw();
     }
 
-    void moveWaiterForward(){
+    void moveWaiterForward()
+    {
         waiter.moveForward();
         view.redraw();
     }
+
+
+    void moveWaiterToTile(int targetX, int targetY)
+    {
+        List<MoveCommand> commands = findPathStrategy.findPath(targetX, targetY);
+        moveWaiter(commands);
+    }
+
+    public int tileCoordinatesToId(int x, int y)
+    {
+        return y * map.getWidth() + x;
+    }
+
+
 }

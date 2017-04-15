@@ -14,7 +14,7 @@ public class Waiter
     private int tileY;
     private WAITER_ANGLE angle = WAITER_ANGLE.EAST;
 
-    private final int speed = 100;
+    private final static int speed = 250;
     private LocalTime lastMoveTime = LocalTime.now();
 
     public Waiter(int tileX, int tileY, WaiterPresenter presenter)
@@ -24,9 +24,19 @@ public class Waiter
         this.presenter = presenter;
     }
 
+    public void setPosition(int x, int y){
+        tileX = x;
+        tileY = y;
+    }
+
     public WAITER_ANGLE getAngle()
     {
         return angle;
+    }
+
+    public void setAngle(WAITER_ANGLE angle)
+    {
+        this.angle = angle;
     }
 
     public int getTileX()
@@ -39,11 +49,15 @@ public class Waiter
         return tileY;
     }
 
-    public boolean rotateLeft()
+    public boolean rotateLeft(){
+        return rotateLeft(false);
+    }
+
+    public boolean rotateLeft(boolean force)
     {
         LocalTime currentTime = LocalTime.now();
 
-        if(ChronoUnit.MILLIS.between(lastMoveTime, currentTime) < speed)
+        if(!force && ChronoUnit.MILLIS.between(lastMoveTime, currentTime) < speed)
         {
             return false;
         }
@@ -54,11 +68,15 @@ public class Waiter
         return true;
     }
 
-    public boolean rotateRight()
+    public boolean rotateRight(){
+        return rotateRight(false);
+    }
+
+    public boolean rotateRight(boolean force)
     {
         LocalTime currentTime = LocalTime.now();
 
-        if(ChronoUnit.MILLIS.between(lastMoveTime, currentTime) < speed)
+        if(!force && ChronoUnit.MILLIS.between(lastMoveTime, currentTime) < speed)
         {
             return false;
         }
@@ -69,11 +87,15 @@ public class Waiter
         return true;
     }
 
-    public boolean moveForward()
+    public boolean moveForward(){
+        return moveForward(false);
+    }
+
+    public boolean moveForward(boolean force)
     {
         LocalTime currentTime = LocalTime.now();
 
-        if(ChronoUnit.MILLIS.between(lastMoveTime, currentTime) < speed)
+        if(!force && ChronoUnit.MILLIS.between(lastMoveTime, currentTime) < speed)
         {
             return false;
         }

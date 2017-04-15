@@ -43,6 +43,8 @@ public class WaiterView extends Application {
 
             initializeKeyboardEventHandler(scene);
 
+            scene.setOnMouseClicked(e -> presenter.moveWaiterToTile(doubleToTileId(e.getX()), doubleToTileId(e.getY())));
+
             Map map = loadMap();
             canvas = new Canvas(800, 640);
             mapRenderer = createRenderer(map);

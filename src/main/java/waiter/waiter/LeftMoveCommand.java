@@ -40,4 +40,12 @@ public class LeftMoveCommand implements MoveCommand
 
         return progress == 2;
     }
+
+    @Override
+    public boolean simulate()
+    {
+        waiter.rotateLeft(true);
+        waiter.moveForward(true);
+        return true;
+    }
 }

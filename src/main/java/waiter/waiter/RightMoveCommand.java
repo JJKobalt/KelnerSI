@@ -40,4 +40,12 @@ public class RightMoveCommand implements MoveCommand
 
         return progress == 2;
     }
+
+    @Override
+    public boolean simulate()
+    {
+        waiter.rotateRight(true);
+        waiter.moveForward(true);
+        return true;
+    }
 }

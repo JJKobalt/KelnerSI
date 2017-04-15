@@ -14,4 +14,10 @@ public class RotateLeftMoveCommand implements MoveCommand
     {
         return waiter.rotateLeft();
     }
+
+    @Override
+    public boolean simulate()
+    {
+        return waiter.rotateLeft(true);
+    }
 }
