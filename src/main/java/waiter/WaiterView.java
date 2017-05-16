@@ -7,8 +7,10 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import tiled.core.Map;
 import tiled.io.TMXMapReader;
@@ -38,19 +40,25 @@ public class WaiterView extends Application {
 
             waiterImages = generateWaiterImages();
 
-            Pane root = new StackPane();
-            Scene scene = new Scene(root, 800, 640);
+            Pane root = new HBox();
+            Scene scene = new Scene(root, 1000, 640);
 
             initializeKeyboardEventHandler(scene);
 
-            scene.setOnMouseClicked(e -> presenter.moveWaiterToTile(doubleToTileId(e.getX()), doubleToTileId(e.getY())));
 
             Map map = loadMap();
             canvas = new Canvas(800, 640);
+            canvas.setOnMouseClicked(e -> presenter.moveWaiterToTile(doubleToTileId(e.getX()), doubleToTileId(e.getY())));
+
             mapRenderer = createRenderer(map);
             root.getChildren().add(canvas);
 
             presenter = new WaiterPresenter(this, map);
+
+            Pane rightPane = generateMenuPane();
+
+            root.getChildren().add(rightPane);
+
 
             redraw();
 
@@ -63,6 +71,41 @@ public class WaiterView extends Application {
             e.printStackTrace();
         }
 
+    }
+
+    private Pane generateMenuPane()
+    {
+        Pane rightPane = new VBox();
+        rightPane.setMinWidth(200);
+        rightPane.setMaxWidth(200);
+
+        rightPane.getChildren().add(new Text(""));
+        Text title = new Text("Pizze wegetariańskie:");
+        title.setStyle("-fx-font-weight: bold;");
+        rightPane.getChildren().add(title);
+
+        for(String pizza : presenter.getVegetablePizzas()){
+            rightPane.getChildren().add(new Text(pizza));
+        }
+
+        rightPane.getChildren().add(new Text(""));
+        title = new Text("Pizze mięsne:");
+        title.setStyle("-fx-font-weight: bold;");
+        rightPane.getChildren().add(title);
+
+        for(String pizza : presenter.getMeatPizzas()){
+            rightPane.getChildren().add(new Text(pizza));
+        }
+
+        rightPane.getChildren().add(new Text(""));
+        title = new Text("Pizze ostre:");
+        title.setStyle("-fx-font-weight: bold;");
+        rightPane.getChildren().add(title);
+
+        for(String pizza : presenter.getHotPizzas()){
+            rightPane.getChildren().add(new Text(pizza));
+        }
+        return rightPane;
     }
 
     private int doubleToTileId(double x) {

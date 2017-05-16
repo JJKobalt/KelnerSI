@@ -3,7 +3,11 @@ package waiter.menu;
 import dt.BadDecisionException;
 import dt.DecisionTree;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.stream.Stream;
 
 public class Menu
 {
@@ -24,6 +28,7 @@ public class Menu
                 new Pizza("Margherita"),
                 new Pizza("Funghi").withMushrooms(),
                 new Pizza("Vegetariana").withMushrooms().withCorn().withOnion(),
+                new Pizza("Vegetariana Hot").withMushrooms().withCorn().withOnion().withOnion().withPepper(),
                 new Pizza("Vesuvio").withHam(),
                 new Pizza("Salami").withSalami(),
                 new Pizza("Capriciosa").withHam().withMushrooms(),
@@ -152,6 +157,10 @@ public class Menu
             e.printStackTrace();
             return false;
         }
+    }
+
+    public Stream<Pizza> getPizzas(){
+        return pizzas.stream();
     }
 
 }

@@ -6,6 +6,8 @@ import tiled.core.Tile;
 import tiled.core.TileLayer;
 import waiter.map.FindPathStrategy;
 import waiter.map.NaiveFindPathStrategy;
+import waiter.menu.Menu;
+import waiter.menu.Pizza;
 import waiter.waiter.*;
 
 import java.util.ArrayList;
@@ -13,6 +15,7 @@ import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 
 public class WaiterPresenter
 {
@@ -20,6 +23,7 @@ public class WaiterPresenter
     private final Map map;
     private WaiterView view;
     private Waiter waiter;
+    private Menu menu;
 
     private FindPathStrategy findPathStrategy;
 
@@ -29,6 +33,7 @@ public class WaiterPresenter
         this.map = map;
         waiter = new Waiter(3, 3, this);
         findPathStrategy = new NaiveFindPathStrategy(this);
+        menu = new Menu();
     }
 
     public Waiter getWaiter()
@@ -130,6 +135,21 @@ public class WaiterPresenter
     {
         List<MoveCommand> commands = findPathStrategy.findPath(targetX, targetY);
         moveWaiter(commands);
+    }
+
+    List<String> getVegetablePizzas(){
+        return menu.getPizzas().filter(pizza -> menu.isVegetable(pizza))
+                .map(Pizza::getName).collect(Collectors.toList());
+    }
+
+    List<String> getMeatPizzas(){
+        return menu.getPizzas().filter(pizza -> !menu.isVegetable(pizza))
+                .map(Pizza::getName).collect(Collectors.toList());
+    }
+
+    List<String> getHotPizzas(){
+        return menu.getPizzas().filter(pizza -> menu.isHot(pizza))
+                .map(Pizza::getName).collect(Collectors.toList());
     }
 
     public int tileCoordinatesToId(int x, int y)
