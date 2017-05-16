@@ -158,4 +158,8 @@ public class WaiterPresenter
     }
 
 
+    public void addPizza(Pizza pizza)
+    {
+        menu.addPizza(pizza);
+    }
 }

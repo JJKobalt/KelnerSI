@@ -1,9 +1,14 @@
 package waiter;
 
 import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -16,10 +21,12 @@ import tiled.core.Map;
 import tiled.io.TMXMapReader;
 import waiter.map.FXOrthogonalMapRenderer;
 import waiter.map.MapRenderer;
+import waiter.menu.Pizza;
 import waiter.waiter.WAITER_ANGLE;
 import waiter.waiter.Waiter;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 
 
@@ -28,6 +35,7 @@ public class WaiterView extends Application {
     private static final int TILE_SIZE = 32;
     private MapRenderer mapRenderer;
 
+    private Pane root;
     private Canvas canvas;
 
     private WaiterPresenter presenter;
@@ -40,7 +48,7 @@ public class WaiterView extends Application {
 
             waiterImages = generateWaiterImages();
 
-            Pane root = new HBox();
+            root = new HBox();
             Scene scene = new Scene(root, 1000, 640);
 
             initializeKeyboardEventHandler(scene);
@@ -76,6 +84,7 @@ public class WaiterView extends Application {
     private Pane generateMenuPane()
     {
         Pane rightPane = new VBox();
+        rightPane.setId("rightPane");
         rightPane.setMinWidth(200);
         rightPane.setMaxWidth(200);
 
@@ -105,6 +114,87 @@ public class WaiterView extends Application {
         for(String pizza : presenter.getHotPizzas()){
             rightPane.getChildren().add(new Text(pizza));
         }
+        rightPane.getChildren().add(new Text(""));
+        rightPane.getChildren().add(new Text(""));
+
+        Button button = new Button();
+        button.setText("Dodaj nową pizze");
+        rightPane.getChildren().add(button);
+
+        button.setOnMouseClicked(event -> {
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader();
+            fxmlLoader.setLocation(getClass().getResource("/addPizza.fxml"));
+            Scene scene = new Scene(fxmlLoader.load(), 600, 400);
+            Stage stage = new Stage();
+
+            TextField nameField = (TextField) scene.lookup("#name");
+
+            Button addNewButton = (Button) scene.lookup("#submit");
+
+            addNewButton.setOnMouseClicked(ev -> {
+                Pizza pizza = new Pizza(nameField.getText());
+
+                if(((CheckBox) scene.lookup("#mushrooms")).isSelected()){
+                    pizza.withMushrooms();
+                }
+
+                if(((CheckBox) scene.lookup("#ham")).isSelected()){
+                    pizza.withHam();
+                }
+
+                if(((CheckBox) scene.lookup("#salami")).isSelected()){
+                    pizza.withSalami();
+                }
+
+                if(((CheckBox) scene.lookup("#pineapple")).isSelected()){
+                    pizza.withPineapple();
+                }
+
+                if(((CheckBox) scene.lookup("#tuna")).isSelected()){
+                    pizza.withTuna();
+                }
+
+                if(((CheckBox) scene.lookup("#corn")).isSelected()){
+                    pizza.withCorn();
+                }
+
+                if(((CheckBox) scene.lookup("#onion")).isSelected()){
+                    pizza.withOnion();
+                }
+
+                if(((CheckBox) scene.lookup("#kebab")).isSelected()){
+                    pizza.withKebab();
+                }
+
+                if(((CheckBox) scene.lookup("#sausage")).isSelected()){
+                    pizza.withSausage();
+                }
+
+                if(((CheckBox) scene.lookup("#pepper")).isSelected()){
+                    pizza.withPepper();
+                }
+
+                if(((CheckBox) scene.lookup("#cayenne")).isSelected()){
+                    pizza.withCayenne();
+                }
+
+                presenter.addPizza(pizza);
+
+                root.getChildren().remove(1);
+                root.getChildren().add(generateMenuPane());
+
+                ((Node)(ev.getSource())).getScene().getWindow().hide();
+            });
+
+            stage.setTitle("Dodawanie nowej pizzy");
+            stage.setScene(scene);
+            stage.show();
+        } catch (IOException e) {
+            System.err.println(e);
+        }
+    });
+
         return rightPane;
     }
 
