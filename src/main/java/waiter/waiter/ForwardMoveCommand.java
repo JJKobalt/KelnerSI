@@ -15,9 +15,4 @@ public class ForwardMoveCommand implements MoveCommand
         return waiter.moveForward(false);
     }
 
-    @Override
-    public boolean simulate()
-    {
-        return waiter.moveForward(true);
-    }
 }

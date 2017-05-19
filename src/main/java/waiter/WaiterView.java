@@ -219,9 +219,6 @@ public class WaiterView extends Application {
             if(keyEvent.getCode().equals(KeyCode.LEFT)){
                 presenter.rotateWaiterLeft();
             }
-            if(keyEvent.getCode().equals(KeyCode.SPACE)){
-                presenter.moveWaiter(presenter.generateMoveCommands());
-            }
         });
     }
 

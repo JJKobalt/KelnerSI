@@ -4,8 +4,8 @@ import tiled.core.Map;
 import tiled.core.MapLayer;
 import tiled.core.Tile;
 import tiled.core.TileLayer;
+import waiter.map.AStarFindPath;
 import waiter.map.FindPathStrategy;
-import waiter.map.NaiveFindPathStrategy;
 import waiter.menu.Menu;
 import waiter.menu.Pizza;
 import waiter.waiter.*;
@@ -31,8 +31,8 @@ public class WaiterPresenter
     {
         this.view = view;
         this.map = map;
-        waiter = new Waiter(3, 3, this);
-        findPathStrategy = new NaiveFindPathStrategy(this);
+        waiter = new Waiter(3, 1);
+        findPathStrategy = new AStarFindPath(this);
         menu = new Menu();
     }
 
@@ -41,7 +41,8 @@ public class WaiterPresenter
         return waiter;
     }
 
-    public Map getMap(){
+    public Map getMap()
+    {
         return map;
     }
 
@@ -70,20 +71,35 @@ public class WaiterPresenter
     }
 
 
-    List<MoveCommand> generateMoveCommands()
+    private List<MoveCommand> generateMoveCommands(List<WAITER_MOVE> instructions)
     {
         List<MoveCommand> commands = new ArrayList<>();
-        commands.add(new LeftMoveCommand(getWaiter()));
-        commands.add(new ForwardMoveCommand(getWaiter()));
-        commands.add(new RightMoveCommand(getWaiter()));
-        commands.add(new ForwardMoveCommand(getWaiter()));
-        commands.add(new ForwardMoveCommand(getWaiter()));
+
+        for(WAITER_MOVE instruction : instructions)
+        {
+            if(instruction == WAITER_MOVE.LEFT)
+            {
+                commands.add(new RotateLeftMoveCommand(getWaiter()));
+            }
+            else if(instruction == WAITER_MOVE.RIGHT)
+            {
+                commands.add(new RotateRightMoveCommand(getWaiter()));
+            }
+            else if(instruction == WAITER_MOVE.BACKWARD){
+                commands.add(new RotateRightMoveCommand(getWaiter()));
+                commands.add(new RotateRightMoveCommand(getWaiter()));
+            }
+            commands.add(new ForwardMoveCommand(getWaiter()));
+        }
 
         return commands;
     }
 
-    void moveWaiter(List<MoveCommand> commands)
+
+    private void moveWaiter(List<WAITER_MOVE> instructions)
     {
+
+        List<MoveCommand> commands = generateMoveCommands(instructions);
 
         ConcurrentLinkedQueue<MoveCommand> queue = new ConcurrentLinkedQueue<>(commands);
 
@@ -133,21 +149,24 @@ public class WaiterPresenter
 
     void moveWaiterToTile(int targetX, int targetY)
     {
-        List<MoveCommand> commands = findPathStrategy.findPath(targetX, targetY);
+        List<WAITER_MOVE> commands = findPathStrategy.findPath(targetX, targetY);
         moveWaiter(commands);
     }
 
-    List<String> getVegetablePizzas(){
+    List<String> getVegetablePizzas()
+    {
         return menu.getPizzas().filter(pizza -> menu.isVegetable(pizza))
                 .map(Pizza::getName).collect(Collectors.toList());
     }
 
-    List<String> getMeatPizzas(){
+    List<String> getMeatPizzas()
+    {
         return menu.getPizzas().filter(pizza -> !menu.isVegetable(pizza))
                 .map(Pizza::getName).collect(Collectors.toList());
     }
 
-    List<String> getHotPizzas(){
+    List<String> getHotPizzas()
+    {
         return menu.getPizzas().filter(pizza -> menu.isHot(pizza))
                 .map(Pizza::getName).collect(Collectors.toList());
     }
