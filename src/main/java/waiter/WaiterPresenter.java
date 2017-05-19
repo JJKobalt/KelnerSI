@@ -4,9 +4,12 @@ import tiled.core.Map;
 import tiled.core.MapLayer;
 import tiled.core.Tile;
 import tiled.core.TileLayer;
+
 import waiter.customer.Customer;
+
+import waiter.map.AStarFindPath;
+
 import waiter.map.FindPathStrategy;
-import waiter.map.NaiveFindPathStrategy;
 import waiter.menu.Menu;
 import waiter.menu.Pizza;
 import waiter.waiter.*;
@@ -33,8 +36,8 @@ public class WaiterPresenter
     WaiterPresenter(WaiterView view, Map map) {
         this.view = view;
         this.map = map;
-        waiter = new Waiter(3, 3, this);
-        findPathStrategy = new NaiveFindPathStrategy(this);
+        waiter = new Waiter(3, 1);
+        findPathStrategy = new AStarFindPath(this);
         menu = new Menu();
 
 
@@ -65,7 +68,8 @@ public class WaiterPresenter
         return waiter;
     }
 
-    public Map getMap(){
+    public Map getMap()
+    {
         return map;
     }
 
@@ -89,18 +93,39 @@ public class WaiterPresenter
     }
 
 
-    List<MoveCommand> generateMoveCommands() {
+
+    private List<MoveCommand> generateMoveCommands(List<WAITER_MOVE> instructions)
+    {
+
         List<MoveCommand> commands = new ArrayList<>();
-        commands.add(new LeftMoveCommand(getWaiter()));
-        commands.add(new ForwardMoveCommand(getWaiter()));
-        commands.add(new RightMoveCommand(getWaiter()));
-        commands.add(new ForwardMoveCommand(getWaiter()));
-        commands.add(new ForwardMoveCommand(getWaiter()));
+
+        for(WAITER_MOVE instruction : instructions)
+        {
+            if(instruction == WAITER_MOVE.LEFT)
+            {
+                commands.add(new RotateLeftMoveCommand(getWaiter()));
+            }
+            else if(instruction == WAITER_MOVE.RIGHT)
+            {
+                commands.add(new RotateRightMoveCommand(getWaiter()));
+            }
+            else if(instruction == WAITER_MOVE.BACKWARD){
+                commands.add(new RotateRightMoveCommand(getWaiter()));
+                commands.add(new RotateRightMoveCommand(getWaiter()));
+            }
+            commands.add(new ForwardMoveCommand(getWaiter()));
+        }
 
         return commands;
     }
 
-    void moveWaiter(List<MoveCommand> commands) {
+
+
+    private void moveWaiter(List<WAITER_MOVE> instructions)
+    {
+
+
+        List<MoveCommand> commands = generateMoveCommands(instructions);
 
         ConcurrentLinkedQueue<MoveCommand> queue = new ConcurrentLinkedQueue<>(commands);
 
@@ -134,22 +159,27 @@ public class WaiterPresenter
     }
 
 
-    void moveWaiterToTile(int targetX, int targetY) {
-        List<MoveCommand> commands = findPathStrategy.findPath(targetX, targetY);
+
+    void moveWaiterToTile(int targetX, int targetY)
+    {
+        List<WAITER_MOVE> commands = findPathStrategy.findPath(targetX, targetY);
         moveWaiter(commands);
     }
 
-    List<String> getVegetablePizzas(){
+    List<String> getVegetablePizzas()
+    {
         return menu.getPizzas().filter(pizza -> menu.isVegetable(pizza))
                 .map(Pizza::getName).collect(Collectors.toList());
     }
 
-    List<String> getMeatPizzas(){
+    List<String> getMeatPizzas()
+    {
         return menu.getPizzas().filter(pizza -> !menu.isVegetable(pizza))
                 .map(Pizza::getName).collect(Collectors.toList());
     }
 
-    List<String> getHotPizzas(){
+    List<String> getHotPizzas()
+    {
         return menu.getPizzas().filter(pizza -> menu.isHot(pizza))
                 .map(Pizza::getName).collect(Collectors.toList());
     }
@@ -201,13 +231,14 @@ public class WaiterPresenter
 
     public void moveWaiterToTileWithoutThread(int targetX, int targetY) {
 
-        List<MoveCommand> commands = findPathStrategy.findPath(targetX, targetY);
+        List<WAITER_MOVE> commands = findPathStrategy.findPath(targetX, targetY);
         moveWaiterWithoutThread(commands);
 
     }
 
-    private void moveWaiterWithoutThread(List<MoveCommand> commands) {
+    private void moveWaiterWithoutThread(List<WAITER_MOVE> instructions) {
 
+        List<MoveCommand> commands = generateMoveCommands(instructions);
         ConcurrentLinkedQueue<MoveCommand> queue = new ConcurrentLinkedQueue<>(commands);
         executeCommandQueue(queue);
 
@@ -248,51 +279,51 @@ public class WaiterPresenter
 
             if (angle == WAITER_ANGLE.SOUTH) {
 
-                queue.add(new RightMoveCommand(waiter));
-                queue.add(new RightMoveCommand(waiter));
+                queue.add(new RotateRightMoveCommand(waiter));
+                queue.add(new RotateRightMoveCommand(waiter));
 
             }
             if (angle == WAITER_ANGLE.WEST) {
-                queue.add(new RightMoveCommand(waiter));
+                queue.add(new RotateRightMoveCommand(waiter));
             }
             if (angle == WAITER_ANGLE.EAST) {
-                queue.add(new LeftMoveCommand(waiter));
+                queue.add(new RotateLeftMoveCommand(waiter));
             }
         } else if (waiter.getTileX() < tileCoordinate.getTileX()) {
 
             if (angle == WAITER_ANGLE.NORTH) {
-                queue.add(new RightMoveCommand(waiter));
-                queue.add(new RightMoveCommand(waiter));
+                queue.add(new RotateRightMoveCommand(waiter));
+                queue.add(new RotateRightMoveCommand(waiter));
             }
             if (angle == WAITER_ANGLE.WEST) {
-                queue.add(new LeftMoveCommand(waiter));
+                queue.add(new RotateLeftMoveCommand(waiter));
             }
             if (angle == WAITER_ANGLE.EAST) {
-                queue.add(new RightMoveCommand(waiter));
+                queue.add(new RotateRightMoveCommand(waiter));
             }
         } else if (waiter.getTileY() < tileCoordinate.getTileY()) {
 
             if (angle == WAITER_ANGLE.SOUTH) {
-                queue.add(new LeftMoveCommand(waiter));
+                queue.add(new RotateLeftMoveCommand(waiter));
             }
             if (angle == WAITER_ANGLE.WEST) {
-                queue.add(new RightMoveCommand(waiter));
-                queue.add(new RightMoveCommand(waiter));
+                queue.add(new RotateRightMoveCommand(waiter));
+                queue.add(new RotateRightMoveCommand(waiter));
             }
             if (angle == WAITER_ANGLE.NORTH) {
-                queue.add(new RightMoveCommand(waiter));
+                queue.add(new RotateRightMoveCommand(waiter));
             }
         } else if (waiter.getTileY() > tileCoordinate.getTileY()) {
 
             if (angle == WAITER_ANGLE.SOUTH) {
-                queue.add(new RightMoveCommand(waiter));
+                queue.add(new RotateRightMoveCommand(waiter));
             }
             if (angle == WAITER_ANGLE.WEST) {
-                queue.add(new RightMoveCommand(waiter));
-                queue.add(new RightMoveCommand(waiter));
+                queue.add(new RotateRightMoveCommand(waiter));
+                queue.add(new RotateRightMoveCommand(waiter));
             }
             if (angle == WAITER_ANGLE.NORTH) {
-                queue.add(new LeftMoveCommand(waiter));
+                queue.add(new RotateLeftMoveCommand(waiter));
             }
         }
 

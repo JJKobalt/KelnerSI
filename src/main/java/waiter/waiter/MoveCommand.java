@@ -4,5 +4,4 @@ public interface MoveCommand
 {
     boolean go();
 
-    boolean simulate();
 }

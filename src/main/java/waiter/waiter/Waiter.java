@@ -1,28 +1,38 @@
 package waiter.waiter;
 
+
 import waiter.TileCoordinate;
 import waiter.WaiterPresenter;
-
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 
 public class Waiter
 {
 
-    private final WaiterPresenter presenter;
-
     private int tileX;
     private int tileY;
     private WAITER_ANGLE angle = WAITER_ANGLE.EAST;
 
     private final static int speed = 250;
+
+    private final static int rotationSpeed = 100;
+
     private LocalTime lastMoveTime = LocalTime.now();
 
-    public Waiter(int tileX, int tileY, WaiterPresenter presenter)
+    public Waiter(int tileX, int tileY)
     {
         this.tileX = tileX;
         this.tileY = tileY;
-        this.presenter = presenter;
+    }
+
+    public int getSpeed()
+    {
+        return speed;
+    }
+
+    public int getRotationSpeed()
+    {
+        return rotationSpeed;
     }
 
     public void setPosition(int x, int y){
@@ -58,7 +68,7 @@ public class Waiter
     {
         LocalTime currentTime = LocalTime.now();
 
-        if(!force && ChronoUnit.MILLIS.between(lastMoveTime, currentTime) < speed)
+        if(!force && ChronoUnit.MILLIS.between(lastMoveTime, currentTime) < rotationSpeed)
         {
             return false;
         }
@@ -77,7 +87,7 @@ public class Waiter
     {
         LocalTime currentTime = LocalTime.now();
 
-        if(!force && ChronoUnit.MILLIS.between(lastMoveTime, currentTime) < speed)
+        if(!force && ChronoUnit.MILLIS.between(lastMoveTime, currentTime) < rotationSpeed)
         {
             return false;
         }
@@ -101,19 +111,19 @@ public class Waiter
             return false;
         }
 
-        if(angle == WAITER_ANGLE.NORTH && presenter.isWalkable(tileX, tileY - 1))
+        if(angle == WAITER_ANGLE.NORTH)
         {
             --tileY;
         }
-        else if(angle == WAITER_ANGLE.SOUTH && presenter.isWalkable(tileX, tileY + 1))
+        else if(angle == WAITER_ANGLE.SOUTH)
         {
             ++tileY;
         }
-        else if(angle == WAITER_ANGLE.EAST && presenter.isWalkable(tileX + 1, tileY))
+        else if(angle == WAITER_ANGLE.EAST )
         {
             ++tileX;
         }
-        else if(angle == WAITER_ANGLE.WEST && presenter.isWalkable(tileX - 1, tileY))
+        else if(angle == WAITER_ANGLE.WEST)
         {
             --tileX;
         }
