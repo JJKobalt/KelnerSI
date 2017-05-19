@@ -1,0 +1,80 @@
+
+FUNCTION_BLOCK prioritizer	// Block definition (there may be more than one block per file)
+
+// Define input variables
+VAR_INPUT				
+	waiting : REAL;
+	distance : REAL;
+	state : REAL;
+	overcrowded : REAL;
+END_VAR
+
+
+
+// Define output variable
+VAR_OUTPUT				
+	priority : REAL;
+END_VAR
+
+
+// Fuzzify input variable 'waiting': {'short', 'normal' , 'long'}
+FUZZIFY waiting
+	TERM short := (0, 1) (10, 1) (15, 0) ;
+	TERM normal := (10, 0) (15,1) (30,0);
+	TERM long := (25, 0) (30, 1);
+END_FUZZIFY
+
+
+// Fuzzify input variable 'distance': {'close' , 'long'}
+FUZZIFY distance
+	TERM close := (0, 1) (20, 0);
+	TERM long := (15, 0) (30, 1);
+END_FUZZIFY
+
+
+
+
+// Fuzzify input variable 'state': {'justCame' , 'think', 'waitingToOrder' , 'waitingForOrder','waitingToEat','eat','pay'}
+FUZZIFY state
+	TERM justCame := (0, 1) (1, 0) ;
+	TERM think := (0, 0) (1, 1) (2, 0);
+	TERM waitingToOrder := (1, 0) (2, 1) (3, 0);
+	TERM waitingForOrder := (2, 0) (3, 1) (4, 0);
+	TERM waitingToEat := (3, 0) (4, 1) (5, 0);
+	TERM eat := (4, 0) (5, 1) (6, 0);
+	TERM pay := (5, 0) (6, 1) (7, 0);
+END_FUZZIFY
+
+// Defzzzify output variable 'tip' : {'cheap', 'average', 'generous' }
+DEFUZZIFY priority			
+	TERM low := (0,0) (2,1) (3,0);
+	TERM medium := (3,0) (5,1) (6,0);
+	TERM high := (6,0) (7,1) (10,0);
+    TERM extreme := (10,0) (12,1) (14,0);
+	METHOD : COG;		// Use 'Center Of Gravity' defuzzification method
+	DEFAULT := 0;		// Default value is 0 (if no rule activates defuzzifier)
+END_DEFUZZIFY
+
+
+
+// Fuzzify input variable 'overcrowded': {'notOvercrowded',  'overcrowded'}
+FUZZIFY overcrowded
+	TERM notOvercrowded := (0, 1) (100, 0) ;
+	TERM overcrowded := (0, 0) (100, 1);
+END_FUZZIFY
+// Inference rules
+RULEBLOCK No1
+	AND : MIN;	// Use 'min' for 'and'
+	ACT : MIN;	// Use 'min' activation method
+	ACCU : MAX;	// Use 'max' accumulation method
+
+	RULE 1 : IF waiting IS short THEN priority IS low;
+	RULE 2 : IF waiting IS normal THEN priority IS medium; 
+	RULE 3 : IF waiting IS long THEN priority IS high;
+	RULE 4 : IF distance IS close THEN priority IS high;
+    RULE 5 : IF distance IS long THEN priority IS low;
+    RULE 6 : IF state IS waitingToOrder THEN priority IS low;
+   RULE 7 : IF overcrowded IS overcrowded AND state IS pay THEN priority IS extreme;
+END_RULEBLOCK
+
+END_FUNCTION_BLOCK

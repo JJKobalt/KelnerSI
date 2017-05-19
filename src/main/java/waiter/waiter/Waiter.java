@@ -1,5 +1,6 @@
 package waiter.waiter;
 
+import waiter.TileCoordinate;
 import waiter.WaiterPresenter;
 
 import java.time.LocalTime;
@@ -119,6 +120,12 @@ public class Waiter
 
         lastMoveTime = currentTime;
         return true;
+    }
+
+
+    public TileCoordinate getTileCoordinate(){
+
+        return new TileCoordinate(tileX,tileY);
     }
 
 }

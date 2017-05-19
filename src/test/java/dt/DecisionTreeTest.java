@@ -2,7 +2,7 @@ package dt;
 
 
 import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import waiter.menu.Pizza;
 
 import java.util.*;
@@ -51,7 +51,7 @@ public class DecisionTreeTest
         };
     }
 
-    @Test
+    @org.junit.jupiter.api.Test
     public void shouldFindVegetablePizzas() throws Exception
     {
         DecisionTree dt = new DecisionTree();

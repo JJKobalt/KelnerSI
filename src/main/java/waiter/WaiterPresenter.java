@@ -4,6 +4,7 @@ import tiled.core.Map;
 import tiled.core.MapLayer;
 import tiled.core.Tile;
 import tiled.core.TileLayer;
+import waiter.customer.Customer;
 import waiter.map.FindPathStrategy;
 import waiter.map.NaiveFindPathStrategy;
 import waiter.menu.Menu;
@@ -11,6 +12,7 @@ import waiter.menu.Pizza;
 import waiter.waiter.*;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
@@ -24,20 +26,42 @@ public class WaiterPresenter
     private WaiterView view;
     private Waiter waiter;
     private Menu menu;
-
+    private List<Customer> customers;
     private FindPathStrategy findPathStrategy;
 
-    WaiterPresenter(WaiterView view, Map map)
-    {
+
+    WaiterPresenter(WaiterView view, Map map) {
         this.view = view;
         this.map = map;
         waiter = new Waiter(3, 3, this);
         findPathStrategy = new NaiveFindPathStrategy(this);
         menu = new Menu();
+
+
+        customers = initializeCustomers();
     }
 
-    public Waiter getWaiter()
-    {
+    private List<Customer> initializeCustomers() {
+        List<Customer> customers = new LinkedList<>();
+        customers.add(new Customer("ADAM",11, 2, this));
+        customers.add(new Customer("BłAZEJ",3, 14, this));
+        customers.add(new Customer("CEZARY",18, 14, this));
+        return customers;
+    }
+
+
+    public void letTheWaiterToStartTheService() {
+
+
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+
+        executorService.submit(new Play(this));
+
+        executorService.shutdown();
+    }
+
+
+    public Waiter getWaiter() {
         return waiter;
     }
 
@@ -45,23 +69,18 @@ public class WaiterPresenter
         return map;
     }
 
-    public boolean isWalkable(int x, int y)
-    {
+    public boolean isWalkable(int x, int y) {
         return isInMapBounds(x, y) && !isCollidable(x, y);
     }
 
-    private boolean isInMapBounds(int x, int y)
-    {
+    private boolean isInMapBounds(int x, int y) {
         return x >= 0 && y >= 0 && x < map.getWidth() && y < map.getHeight();
     }
 
-    private boolean isCollidable(int x, int y)
-    {
-        for(MapLayer layer : this.map)
-        {
+    private boolean isCollidable(int x, int y) {
+        for(MapLayer layer : this.map) {
             Tile tile = ((TileLayer) layer).getTileAt(x, y);
-            if(tile != null && "true".equalsIgnoreCase(tile.getProperties().getProperty("collidable")))
-            {
+            if(tile != null && "true".equalsIgnoreCase(tile.getProperties().getProperty("collidable"))) {
                 return true;
             }
         }
@@ -70,8 +89,7 @@ public class WaiterPresenter
     }
 
 
-    List<MoveCommand> generateMoveCommands()
-    {
+    List<MoveCommand> generateMoveCommands() {
         List<MoveCommand> commands = new ArrayList<>();
         commands.add(new LeftMoveCommand(getWaiter()));
         commands.add(new ForwardMoveCommand(getWaiter()));
@@ -82,8 +100,7 @@ public class WaiterPresenter
         return commands;
     }
 
-    void moveWaiter(List<MoveCommand> commands)
-    {
+    void moveWaiter(List<MoveCommand> commands) {
 
         ConcurrentLinkedQueue<MoveCommand> queue = new ConcurrentLinkedQueue<>(commands);
 
@@ -91,18 +108,7 @@ public class WaiterPresenter
 
         Runnable task = () ->
         {
-            while(!queue.isEmpty())
-            {
-
-                MoveCommand command = queue.peek();
-                boolean moved = command.go();
-
-                if(moved)
-                {
-                    queue.poll();
-                    view.renderWaiter();
-                }
-            }
+            executeCommandQueue(queue);
 
             view.redraw();
         };
@@ -112,27 +118,23 @@ public class WaiterPresenter
         executorService.shutdown();
     }
 
-    void rotateWaiterLeft()
-    {
+    void rotateWaiterLeft() {
         waiter.rotateLeft();
         view.redraw();
     }
 
-    void rotateWaiterRight()
-    {
+    void rotateWaiterRight() {
         waiter.rotateRight();
         view.redraw();
     }
 
-    void moveWaiterForward()
-    {
+    void moveWaiterForward() {
         waiter.moveForward();
         view.redraw();
     }
 
 
-    void moveWaiterToTile(int targetX, int targetY)
-    {
+    void moveWaiterToTile(int targetX, int targetY) {
         List<MoveCommand> commands = findPathStrategy.findPath(targetX, targetY);
         moveWaiter(commands);
     }
@@ -152,14 +154,170 @@ public class WaiterPresenter
                 .map(Pizza::getName).collect(Collectors.toList());
     }
 
-    public int tileCoordinatesToId(int x, int y)
-    {
+    public int tileCoordinatesToId(int x, int y) {
         return y * map.getWidth() + x;
     }
 
 
-    public void addPizza(Pizza pizza)
-    {
+    public void addPizza(Pizza pizza) {
         menu.addPizza(pizza);
     }
+
+    public List<Customer> getCustomers() {
+        return customers;
+    }
+
+    public TileCoordinate getTheClosestTileCoordinateToWaiter(TileCoordinate tileCoordinate) {
+
+        List<TileCoordinate> surrondings = getNotCollidableSurrondings(tileCoordinate);
+
+
+        int distance;
+        int minDistance = 100;
+        TileCoordinate targetedCoordinate = null;
+        for (TileCoordinate coordinate : surrondings) {
+            distance = coordinate.distance(waiter.getTileCoordinate());
+            if (distance < minDistance) {
+                minDistance = distance;
+                targetedCoordinate = coordinate;
+            }
+        }
+        return targetedCoordinate;
+    }
+
+    private List<TileCoordinate> getNotCollidableSurrondings(TileCoordinate tileCoordinate) {
+        List<TileCoordinate> coordinates = new ArrayList<>();
+        List<TileCoordinate> surroundingCoordinates = tileCoordinate.getSurronding();
+
+        for (TileCoordinate coordinate : surroundingCoordinates) {
+
+            if (!isCollidable(coordinate.tileX, coordinate.tileY)) {
+                coordinates.add(coordinate);
+            }
+        }
+
+        return coordinates;
+    }
+
+    public void moveWaiterToTileWithoutThread(int targetX, int targetY) {
+
+        List<MoveCommand> commands = findPathStrategy.findPath(targetX, targetY);
+        moveWaiterWithoutThread(commands);
+
+    }
+
+    private void moveWaiterWithoutThread(List<MoveCommand> commands) {
+
+        ConcurrentLinkedQueue<MoveCommand> queue = new ConcurrentLinkedQueue<>(commands);
+        executeCommandQueue(queue);
+
+        view.redraw();
+    }
+
+    private void executeCommandQueue(ConcurrentLinkedQueue<MoveCommand> queue) {
+        while (!queue.isEmpty()) {
+
+            MoveCommand command = queue.peek();
+            boolean moved = command.go();
+
+            if (moved) {
+                queue.poll();
+                view.renderWaiter();
+            }
+        }
+    }
+
+
+    public void orderWaiterToStandNextTo(int targetX, int targetY) {
+
+
+        TileCoordinate target = new TileCoordinate(targetX, targetY);
+        TileCoordinate coordinate = getTheClosestTileCoordinateToWaiter(target);
+        moveWaiterToTileWithoutThread(coordinate.getTileX(), coordinate.getTileY());
+        rotateWaiterToFace(target);
+
+
+    }
+
+
+    public void rotateWaiterToFace(TileCoordinate tileCoordinate) {
+
+        WAITER_ANGLE angle = waiter.getAngle();
+        ConcurrentLinkedQueue<MoveCommand> queue = new ConcurrentLinkedQueue<>();
+        if (waiter.getTileX() > tileCoordinate.getTileX()) {
+
+            if (angle == WAITER_ANGLE.SOUTH) {
+
+                queue.add(new RightMoveCommand(waiter));
+                queue.add(new RightMoveCommand(waiter));
+
+            }
+            if (angle == WAITER_ANGLE.WEST) {
+                queue.add(new RightMoveCommand(waiter));
+            }
+            if (angle == WAITER_ANGLE.EAST) {
+                queue.add(new LeftMoveCommand(waiter));
+            }
+        } else if (waiter.getTileX() < tileCoordinate.getTileX()) {
+
+            if (angle == WAITER_ANGLE.NORTH) {
+                queue.add(new RightMoveCommand(waiter));
+                queue.add(new RightMoveCommand(waiter));
+            }
+            if (angle == WAITER_ANGLE.WEST) {
+                queue.add(new LeftMoveCommand(waiter));
+            }
+            if (angle == WAITER_ANGLE.EAST) {
+                queue.add(new RightMoveCommand(waiter));
+            }
+        } else if (waiter.getTileY() < tileCoordinate.getTileY()) {
+
+            if (angle == WAITER_ANGLE.SOUTH) {
+                queue.add(new LeftMoveCommand(waiter));
+            }
+            if (angle == WAITER_ANGLE.WEST) {
+                queue.add(new RightMoveCommand(waiter));
+                queue.add(new RightMoveCommand(waiter));
+            }
+            if (angle == WAITER_ANGLE.NORTH) {
+                queue.add(new RightMoveCommand(waiter));
+            }
+        } else if (waiter.getTileY() > tileCoordinate.getTileY()) {
+
+            if (angle == WAITER_ANGLE.SOUTH) {
+                queue.add(new RightMoveCommand(waiter));
+            }
+            if (angle == WAITER_ANGLE.WEST) {
+                queue.add(new RightMoveCommand(waiter));
+                queue.add(new RightMoveCommand(waiter));
+            }
+            if (angle == WAITER_ANGLE.NORTH) {
+                queue.add(new LeftMoveCommand(waiter));
+            }
+        }
+
+
+    }
+
+    public void deleteCustomer(Customer leavingCustomer) {
+
+        int l = customers.size();
+        customers.remove(leavingCustomer);
+        int n = customers.size();
+
+    }
+
+
+    public void redrawView() {
+
+        view.redraw();
+    }
+
+    public double getOvercrowded() {
+
+
+        return (customers.size()/32)*100;
+    }
 }
+
+

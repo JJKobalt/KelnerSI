@@ -19,6 +19,7 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import tiled.core.Map;
 import tiled.io.TMXMapReader;
+import waiter.customer.*;
 import waiter.map.FXOrthogonalMapRenderer;
 import waiter.map.MapRenderer;
 import waiter.menu.Pizza;
@@ -28,6 +29,7 @@ import waiter.waiter.Waiter;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 
 
 public class WaiterView extends Application {
@@ -40,6 +42,7 @@ public class WaiterView extends Application {
 
     private WaiterPresenter presenter;
     private java.util.Map<WAITER_ANGLE, Image> waiterImages;
+
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -74,12 +77,13 @@ public class WaiterView extends Application {
             primaryStage.setScene(scene);
             primaryStage.show();
 
-
+presenter.letTheWaiterToStartTheService();
         } catch (Exception e) {
             e.printStackTrace();
         }
 
     }
+
 
     private Pane generateMenuPane()
     {
@@ -259,9 +263,33 @@ public class WaiterView extends Application {
         return images;
     }
 
+
+    Image getCustomerImage(CustomerState state) {
+
+        if (state instanceof CustomerEat)
+            return new Image(WaiterView.class.getClassLoader().getResource("customerEat.png").toString());
+        if (state instanceof CustomerJustCame)
+            return new Image(WaiterView.class.getClassLoader().getResource("customerJustCame.png").toString());
+        if (state instanceof CustomerPay)
+            return new Image(WaiterView.class.getClassLoader().getResource("customerPay.png").toString());
+        if (state instanceof CustomerThink)
+            return new Image(WaiterView.class.getClassLoader().getResource("customerThink.png").toString());
+        if (state instanceof CustomerWaitingForOrder)
+            return new Image(WaiterView.class.getClassLoader().getResource("customerWaitingForOrder.png").toString());
+        if (state instanceof CustomerWaitingToEat)
+            return new Image(WaiterView.class.getClassLoader().getResource("customerWaitingToEat.png").toString());
+        if (state instanceof CustomerWaitingToOrder)
+            return new Image(WaiterView.class.getClassLoader().getResource("customerWaitingToOrder.png").toString());
+
+        System.err.println("NOT FOUND IMAGE FOR CUSTOMER");
+        return new Image(WaiterView.class.getClassLoader().getResource("waiter-north.png").toString());
+
+    }
+
     void redraw(){
         renderMap();
         renderWaiter();
+        renderCustomers();
     }
 
     void renderWaiter()
@@ -274,6 +302,21 @@ public class WaiterView extends Application {
                 tileIdToDouble(waiter.getTileY()),
                 TILE_SIZE, TILE_SIZE);
     }
+
+    void renderCustomers() {
+        List<Customer> customers = presenter.getCustomers();
+        GraphicsContext gc = canvas.getGraphicsContext2D();
+
+        for (Customer customer : customers) {
+            gc.drawImage(getCustomerImage(customer.getState()),
+                    tileIdToDouble(customer.getTileX()),
+                    tileIdToDouble(customer.getTileY()),
+                    TILE_SIZE, TILE_SIZE);
+
+        }
+
+    }
+
 
     private void renderMap()
     {
