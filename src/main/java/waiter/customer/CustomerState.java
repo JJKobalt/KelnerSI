@@ -45,7 +45,7 @@ public abstract class CustomerState {
 
         ExecutorService executorService = Executors.newSingleThreadExecutor();
 
-        executorService.submit(wait);
+        executorService.execute(wait);
 
         executorService.shutdown();
 

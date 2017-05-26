@@ -4,11 +4,8 @@ import tiled.core.Map;
 import tiled.core.MapLayer;
 import tiled.core.Tile;
 import tiled.core.TileLayer;
-
 import waiter.customer.Customer;
-
 import waiter.map.AStarFindPath;
-
 import waiter.map.FindPathStrategy;
 import waiter.menu.Menu;
 import waiter.menu.Pizza;
@@ -31,32 +28,103 @@ public class WaiterPresenter
     private Menu menu;
     private List<Customer> customers;
     private FindPathStrategy findPathStrategy;
-
+    private List<TileCoordinate> spots;
+private TileCoordinate foodPoint;
 
     WaiterPresenter(WaiterView view, Map map) {
+        spots = initializeAllSpots();
         this.view = view;
         this.map = map;
         waiter = new Waiter(3, 1);
         findPathStrategy = new AStarFindPath(this);
         menu = new Menu();
-
+        foodPoint = new TileCoordinate(4,3);
 
         customers = initializeCustomers();
     }
 
+    private List<TileCoordinate> initializeAllSpots() {
+        List<TileCoordinate> spots = new LinkedList<>();
+        spots.add(new TileCoordinate(10,2));
+        spots.add(new TileCoordinate(11,2));
+        spots.add(new TileCoordinate(10,5));
+        spots.add(new TileCoordinate(11,5));
+
+        spots.add(new TileCoordinate(18,2));
+        spots.add(new TileCoordinate(19,2));
+        spots.add(new TileCoordinate(18,5));
+        spots.add(new TileCoordinate(19,5));
+
+        spots.add(new TileCoordinate(2,8));
+        spots.add(new TileCoordinate(3,8));
+        spots.add(new TileCoordinate(2,11));
+        spots.add(new TileCoordinate(3,11));
+
+        spots.add(new TileCoordinate(10,8));
+        spots.add(new TileCoordinate(11,8));
+        spots.add(new TileCoordinate(10,11));
+        spots.add(new TileCoordinate(11,11));
+
+        spots.add(new TileCoordinate(18,8));
+        spots.add(new TileCoordinate(19,8));
+        spots.add(new TileCoordinate(18,11));
+        spots.add(new TileCoordinate(19,11));
+
+        spots.add(new TileCoordinate(2,14));
+        spots.add(new TileCoordinate(3,14));
+        spots.add(new TileCoordinate(2,17));
+        spots.add(new TileCoordinate(3,17));
+
+        spots.add(new TileCoordinate(10,14));
+        spots.add(new TileCoordinate(11,14));
+        spots.add(new TileCoordinate(10,17));
+        spots.add(new TileCoordinate(11,17));
+
+        spots.add(new TileCoordinate(18,14));
+        spots.add(new TileCoordinate(19,14));
+        spots.add(new TileCoordinate(18,17));
+        spots.add(new TileCoordinate(19,17));
+        return spots;
+    }
+
     private List<Customer> initializeCustomers() {
-        List<Customer> customers = new LinkedList<>();
-        customers.add(new Customer("ADAM",11, 2, this));
-        customers.add(new Customer("BłAZEJ",3, 14, this));
-        customers.add(new Customer("CEZARY",18, 14, this));
+        List<Customer> customers = getCustomersListVer1();
         return customers;
     }
+
+    private List<Customer> getCustomersListVer1() {
+        List<Customer> customers = new LinkedList<>();
+        customers.add(new Customer(spots.get(0), this ));
+        customers.add(new Customer(spots.get(3), this ));
+        customers.add(new Customer(spots.get(7), this ));
+        customers.add(new Customer(spots.get(8), this ));
+        customers.add(new Customer(spots.get(10), this ));
+        customers.add(new Customer(spots.get(16), this ));
+        customers.add(new Customer(spots.get(18), this ));
+        customers.add(new Customer(spots.get(20), this ));
+        customers.add(new Customer(spots.get(22), this ));
+        customers.add(new Customer(spots.get(25), this ));
+        customers.add(new Customer(spots.get(28), this ));
+        return customers;
+    }
+    private List<Customer> getCustomersListAll() {
+        List<Customer> customers = new LinkedList<>();
+     for(int i=0;i<spots.size();i++)
+     {
+         customers.add(new Customer(spots.get(i), this ));
+     }
+        return customers;
+    }
+
+
+
+
 
 
     public void letTheWaiterToStartTheService() {
 
 
-        ExecutorService executorService = Executors.newSingleThreadExecutor();
+        ExecutorService executorService = Executors.newFixedThreadPool(9999);
 
         executorService.submit(new Play(this));
 
@@ -347,8 +415,22 @@ public class WaiterPresenter
     public double getOvercrowded() {
 
 
-        return (customers.size()/32)*100;
+        return (customers.size()/32d);
     }
+
+    public TileCoordinate getFoodPoint() {
+        return foodPoint;
+    }
+
+    public double getDistanceWaiterFoodPoint()
+    {
+        return waiter.getTileCoordinate().distance(foodPoint);
+    }
+    public double getDistanceCustomerFoodPoint(Customer customer)
+    {
+        return customer.getTileCoordinate().distance(foodPoint);
+    }
+
 }
 
 

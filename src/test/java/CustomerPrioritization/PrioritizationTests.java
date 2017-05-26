@@ -2,7 +2,7 @@ package CustomerPrioritization;
 
 import org.junit.Assert;
 import org.junit.jupiter.api.Test;
-import waiter.FuzzyCustomerPrioritization.FuzzyCustomerPrioritization;
+import waiter.CustomerPrioritization.FuzzyCustomerPrioritization;
 
 /**
  * Created by JanJa on 16.05.2017.

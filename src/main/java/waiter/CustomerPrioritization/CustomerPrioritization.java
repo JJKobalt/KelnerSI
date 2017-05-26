@@ -1,4 +1,4 @@
-package waiter.FuzzyCustomerPrioritization;
+package waiter.CustomerPrioritization;
 
 import waiter.customer.Customer;
 

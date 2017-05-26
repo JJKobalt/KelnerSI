@@ -27,7 +27,6 @@
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="library" name="Gradle: org.encog:encog-core:3.2.0" level="project" />
     <orderEntry type="module-library">
       <library>
         <CLASSES>
@@ -50,6 +49,15 @@
       <library>
         <CLASSES>
           <root url="jar://$MODULE_DIR$/../../libs/jgrapht-core-1.0.1.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../../libs/encog-core-3.3.0.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />

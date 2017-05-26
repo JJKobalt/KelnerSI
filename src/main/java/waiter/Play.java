@@ -1,7 +1,7 @@
 package waiter;
 
-import waiter.FuzzyCustomerPrioritization.CustomerPrioritization;
-import waiter.FuzzyCustomerPrioritization.FuzzyCustomerPrioritization;
+import waiter.CustomerPrioritization.CustomerPrioritization;
+import waiter.CustomerPrioritization.NeuralCustomerPrioritizer;
 import waiter.customer.Customer;
 
 import java.util.List;
@@ -17,7 +17,7 @@ public class Play implements Runnable {
 
     public Play(WaiterPresenter presenter) {
         this.presenter = presenter;
-        customerPrioritizer = new FuzzyCustomerPrioritization(presenter);
+        customerPrioritizer = new NeuralCustomerPrioritizer(presenter);
     }
 
     @Override

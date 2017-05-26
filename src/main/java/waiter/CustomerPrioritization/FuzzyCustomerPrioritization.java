@@ -1,6 +1,7 @@
-package waiter.FuzzyCustomerPrioritization;
+package waiter.CustomerPrioritization;
 
 
+import EncogNN.ServiceFrame;
 import net.sourceforge.jFuzzyLogic.FIS;
 import waiter.WaiterPresenter;
 import waiter.customer.Customer;
@@ -16,12 +17,13 @@ public class FuzzyCustomerPrioritization implements CustomerPrioritization {
     private final String fileName = "FL/CustomerPrioritization.fcl";
     List<Customer> customers;
     FIS fis;
-
+    FuzzyTrainningFileCreator trainningFileCreator;
 
     public FuzzyCustomerPrioritization(WaiterPresenter presenter) {
         this.presenter = presenter;
 
         fis = FIS.load(fileName, true);
+        trainningFileCreator = new FuzzyTrainningFileCreator();
     }
 
     public boolean isFisLoaded() {
@@ -62,7 +64,7 @@ public class FuzzyCustomerPrioritization implements CustomerPrioritization {
 
 
         double waiting =  customer.getWaitingTime();
-        double distance =  presenter.getWaiter().getTileCoordinate().distance(customer.getTileCoordinate());
+        double distance =  customer.getDistanceToFullService();
         fis.setVariable("waiting", waiting);
         fis.setVariable("distance", distance);
         fis.setVariable("state", customer.getState().toValue());
@@ -72,7 +74,9 @@ public class FuzzyCustomerPrioritization implements CustomerPrioritization {
 
         fis.evaluate();
         double result = fis.getVariable("priority").getValue();
-        System.out.println("result: " + result +" of user named " + customer.getName() +  " who is waiting " + waiting + "   and is " + distance + " distance away");
+
+        trainningFileCreator.addToTrainingFile(new ServiceFrame(waiting, distance, customer.getState(), presenter.getOvercrowded()), result);
+        System.out.println("result: " + result +" of user named " + customer.getName() + " with state "+ customer.getState().toString()+ " who is waiting " + waiting + "   and is " + distance + " distance away");
         return result;
     }
 
