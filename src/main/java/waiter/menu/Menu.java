@@ -1,12 +1,10 @@
 package waiter.menu;
 
 import dt.BadDecisionException;
+import dt.CSVReader;
 import dt.DecisionTree;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.*;
 import java.util.stream.Stream;
 
 public class Menu
@@ -85,11 +83,11 @@ public class Menu
 
         try
         {
-            dt.addExample(new Pizza("").withCayenne().getIngradients(), true);
-            dt.addExample(new Pizza("").withOnion().getIngradients(), false);
-            dt.addExample(new Pizza("").withOnion().withPepper().getIngradients(), true);
-            dt.addExample(new Pizza("").withPepper().getIngradients(), false);
+            Map<Pizza, Boolean> learnPizzas = CSVReader.read(Menu.class.getResource("/pizza-learn.csv").getPath());
 
+            for(Map.Entry<Pizza, Boolean> pizza : learnPizzas.entrySet()){
+                dt.addExample(pizza.getKey().getIngradients(), pizza.getValue());
+            }
 
         }
         catch(Exception e)
@@ -99,6 +97,7 @@ public class Menu
 
         dt.compile();
 
+        System.out.println(dt);
         return dt;
     }
 

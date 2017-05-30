@@ -39,14 +39,6 @@ public class Pizza
         this.name = name;
     }
 
-    @Override
-    public String toString()
-    {
-        return "Pizza{" +
-                "name='" + name + '\'' +
-                '}';
-    }
-
     public String getName()
     {
         return name;
@@ -193,6 +185,70 @@ public class Pizza
         return this;
     }
 
+    public void setSauce(boolean sauce)
+    {
+        this.sauce = sauce;
+    }
+
+    public void setCheese(boolean cheese)
+    {
+        this.cheese = cheese;
+    }
+
+    public void setMushrooms(boolean mushrooms)
+    {
+        this.mushrooms = mushrooms;
+    }
+
+    public void setHam(boolean ham)
+    {
+        this.ham = ham;
+    }
+
+    public void setSalami(boolean salami)
+    {
+        this.salami = salami;
+    }
+
+    public void setPineapple(boolean pineapple)
+    {
+        this.pineapple = pineapple;
+    }
+
+    public void setTuna(boolean tuna)
+    {
+        this.tuna = tuna;
+    }
+
+    public void setCorn(boolean corn)
+    {
+        this.corn = corn;
+    }
+
+    public void setOnion(boolean onion)
+    {
+        this.onion = onion;
+    }
+
+    public void setKebab(boolean kebab)
+    {
+        this.kebab = kebab;
+    }
+
+    public void setSausage(boolean sausage)
+    {
+        this.sausage = sausage;
+    }
+
+    public void setPepper(boolean pepper)
+    {
+        this.pepper = pepper;
+    }
+
+    public void setCayenne(boolean cayenne)
+    {
+        this.cayenne = cayenne;
+    }
 
     public Map<String, String> getIngradients(){
         Map<String, String> ingradients = new HashMap<>();
@@ -209,5 +265,110 @@ public class Pizza
         ingradients.put("cayenne", this.hasCayenne() ? "yes" : "no");
         ingradients.put("pepper", this.hasPepper() ? "yes" : "no");
         return ingradients;
+    }
+
+    @Override
+    public String toString()
+    {
+        return "Pizza{" +
+                "name='" + name + '\'' +
+                ", sauce=" + sauce +
+                ", cheese=" + cheese +
+                ", mushrooms=" + mushrooms +
+                ", ham=" + ham +
+                ", salami=" + salami +
+                ", pineapple=" + pineapple +
+                ", tuna=" + tuna +
+                ", corn=" + corn +
+                ", onion=" + onion +
+                ", kebab=" + kebab +
+                ", sausage=" + sausage +
+                ", pepper=" + pepper +
+                ", cayenne=" + cayenne +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if(this == o)
+        {
+            return true;
+        }
+        if(!(o instanceof Pizza))
+        {
+            return false;
+        }
+
+        Pizza pizza = (Pizza) o;
+
+        if(sauce != pizza.sauce)
+        {
+            return false;
+        }
+        if(cheese != pizza.cheese)
+        {
+            return false;
+        }
+        if(mushrooms != pizza.mushrooms)
+        {
+            return false;
+        }
+        if(ham != pizza.ham)
+        {
+            return false;
+        }
+        if(salami != pizza.salami)
+        {
+            return false;
+        }
+        if(pineapple != pizza.pineapple)
+        {
+            return false;
+        }
+        if(tuna != pizza.tuna)
+        {
+            return false;
+        }
+        if(corn != pizza.corn)
+        {
+            return false;
+        }
+        if(onion != pizza.onion)
+        {
+            return false;
+        }
+        if(kebab != pizza.kebab)
+        {
+            return false;
+        }
+        if(sausage != pizza.sausage)
+        {
+            return false;
+        }
+        if(pepper != pizza.pepper)
+        {
+            return false;
+        }
+        return cayenne == pizza.cayenne;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        int result = (sauce ? 1 : 0);
+        result = 31 * result + (cheese ? 1 : 0);
+        result = 31 * result + (mushrooms ? 1 : 0);
+        result = 31 * result + (ham ? 1 : 0);
+        result = 31 * result + (salami ? 1 : 0);
+        result = 31 * result + (pineapple ? 1 : 0);
+        result = 31 * result + (tuna ? 1 : 0);
+        result = 31 * result + (corn ? 1 : 0);
+        result = 31 * result + (onion ? 1 : 0);
+        result = 31 * result + (kebab ? 1 : 0);
+        result = 31 * result + (sausage ? 1 : 0);
+        result = 31 * result + (pepper ? 1 : 0);
+        result = 31 * result + (cayenne ? 1 : 0);
+        return result;
     }
 }
