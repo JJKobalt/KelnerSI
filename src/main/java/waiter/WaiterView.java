@@ -48,7 +48,7 @@ public class WaiterView extends Application {
     public void start(Stage primaryStage) throws Exception {
 
         try {
-
+primaryStage.setOnCloseRequest(e->presenter.stopWaiter());
             waiterImages = generateWaiterImages();
 
             root = new HBox();

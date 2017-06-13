@@ -30,6 +30,7 @@ public class WaiterPresenter
     private FindPathStrategy findPathStrategy;
     private List<TileCoordinate> spots;
 private TileCoordinate foodPoint;
+private  ExecutorService executorService;
 
     WaiterPresenter(WaiterView view, Map map) {
         spots = initializeAllSpots();
@@ -124,7 +125,7 @@ private TileCoordinate foodPoint;
     public void letTheWaiterToStartTheService() {
 
 
-        ExecutorService executorService = Executors.newFixedThreadPool(9999);
+         executorService = Executors.newWorkStealingPool();
 
         executorService.submit(new Play(this));
 
@@ -208,7 +209,7 @@ private TileCoordinate foodPoint;
 
         executorService.submit(task);
 
-        executorService.shutdown();
+
     }
 
     void rotateWaiterLeft() {
@@ -431,6 +432,9 @@ private TileCoordinate foodPoint;
         return customer.getTileCoordinate().distance(foodPoint);
     }
 
+    public void stopWaiter() {
+       executorService.shutdownNow();
+    }
 }
 
 

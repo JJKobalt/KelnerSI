@@ -12,21 +12,21 @@
         <VBox layoutX="0" layoutY="0" prefHeight="400.0" prefWidth="600.0">
             <children>
                 <Label text="Nazwa:" />
-                <TextField fx:id="name" />
+                <TextField fx:id="name" text="Moja Pizza #1" />
                 <CheckBox disable="true" mnemonicParsing="false" selected="true" text="Sos" />
                 <CheckBox disable="true" mnemonicParsing="false" selected="true" text="Ser" />
-                <CheckBox mnemonicParsing="false" fx:id="mushrooms" text="Pieczarki" />
-                <CheckBox mnemonicParsing="false" fx:id="ham" text="Szynka" />
-                <CheckBox mnemonicParsing="false" fx:id="salami" text="Salami" />
-                <CheckBox mnemonicParsing="false" fx:id="pineapple" text="Ananas" />
-                <CheckBox mnemonicParsing="false" fx:id="tuna" text="Tuńczyk" />
-                <CheckBox mnemonicParsing="false" fx:id="corn" text="Kukurydza" />
-                <CheckBox mnemonicParsing="false" fx:id="onion" text="Cebula" />
-                <CheckBox mnemonicParsing="false" fx:id="kebab" text="Kebab" />
-                <CheckBox mnemonicParsing="false" fx:id="sausage" text="Kiełbasa" />
-                <CheckBox mnemonicParsing="false" fx:id="pepper" text="Pieprz" />
-                <CheckBox mnemonicParsing="false" fx:id="cayenne" text="Papryka cayenne" />
-                <Button mnemonicParsing="false" text="Dodaj" fx:id="submit"  textAlignment="CENTER" />
+                <CheckBox fx:id="mushrooms" mnemonicParsing="false" text="Pieczarki" />
+                <CheckBox fx:id="ham" mnemonicParsing="false" text="Szynka" />
+                <CheckBox fx:id="salami" mnemonicParsing="false" text="Salami" />
+                <CheckBox fx:id="pineapple" mnemonicParsing="false" text="Ananas" />
+                <CheckBox fx:id="tuna" mnemonicParsing="false" text="Tuńczyk" />
+                <CheckBox fx:id="corn" mnemonicParsing="false" text="Kukurydza" />
+                <CheckBox fx:id="onion" mnemonicParsing="false" text="Cebula" />
+                <CheckBox fx:id="kebab" mnemonicParsing="false" text="Kebab" />
+                <CheckBox fx:id="sausage" mnemonicParsing="false" text="Kiełbasa" />
+                <CheckBox fx:id="pepper" mnemonicParsing="false" text="Pieprz" />
+                <CheckBox fx:id="cayenne" mnemonicParsing="false" text="Papryka cayenne" />
+                <Button fx:id="submit" mnemonicParsing="false" text="Dodaj" textAlignment="CENTER" />
             </children>
         </VBox>
     </children>

@@ -21,16 +21,17 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../libs/encog-core-3.3.0.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../libs/jFuzzyLogic.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="module" module-name="KelnerSI_main" />
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../libs/slf4j-jdk14-1.7.25.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../libs/jgrapht-core-1.0.1.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -48,17 +49,16 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../libs/jgrapht-core-1.0.1.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../libs/slf4j-jdk14-1.7.25.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="module" module-name="KelnerSI_main" />
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../libs/jFuzzyLogic.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../libs/encog-core-3.3.0.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />

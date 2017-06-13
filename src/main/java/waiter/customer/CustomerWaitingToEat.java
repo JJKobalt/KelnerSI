@@ -14,7 +14,7 @@ public class CustomerWaitingToEat extends CustomerState {
     @Override
     void service() {
 
-        presenter.orderWaiterToStandNextTo(4, 3);
+        presenter.orderWaiterToStandNextTo(4, 5);
         presenter.orderWaiterToStandNextTo(customer.getTileX(), customer.getTileY());
 
         customer.setState(new CustomerEat(presenter,customer));

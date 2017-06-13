@@ -4,8 +4,6 @@ import waiter.WaiterPresenter;
 
 import java.time.LocalTime;
 import java.util.Random;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
@@ -42,12 +40,16 @@ public abstract class CustomerState {
             customer.setState(nextState);
             presenter.redrawView();
         };
-
+/*
         ExecutorService executorService = Executors.newSingleThreadExecutor();
 
         executorService.execute(wait);
 
         executorService.shutdown();
+*/
+Thread t = new Thread(wait);
+t.start();
+
 
     }
 
